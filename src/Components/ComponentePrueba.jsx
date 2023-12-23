@@ -6,28 +6,32 @@ const ComponentePrueba = () => {
     const [data, setData] = useState([])
     const [columnas, setColumnas] = useState([])
     const [cont, setCont] = useState(0)
-    useEffect(() => {
-        axios.get(`${url}/get/1`).then(response => {
-            /*console.log(response.data)*/
+    const [sel,setSel]=useState(0)
+    const handleSelect=(event)=>{
+        setSel(event.target.value)
+        axios.get(`${url}/get/${event.target.value}`).then(response => {
             const datas = response.data;
             const datosFiltrados = datas.filter(item => Array.isArray(item));
             setData(datosFiltrados)
-
             const keys = []
             for (let i = 0; i < datosFiltrados.length; i++) {
                 keys.push(Object.keys(datosFiltrados[i][0]))
             }
             setColumnas(keys)
             setCont(datosFiltrados.length)
-
         }).catch(error => {
             console.log(error)
         })
+    }
+    useEffect(() => {
+
     }, []);
+
+    const editElement=(id,ver)=>{
+        console.log(`carac ${id},ver ${ver}`)
+    }
     const mostrarTabla = () => {
-
         const tablas = [];
-
         for (let i = 0; i < cont; i++) {
             tablas.push(
                 <div className={'flex justify-center my-5'} key={i}>
@@ -40,6 +44,7 @@ const ComponentePrueba = () => {
                                         {columna}
                                     </th>
                                 ))}
+                            <th className={'border border-slate-600 p-3'}></th>
                         </tr>
                         </thead>
                         <tbody>
@@ -52,6 +57,9 @@ const ComponentePrueba = () => {
                                                 {fila[columna]}
                                             </td>
                                         ))}
+                                    <td className={'border border-slate-600 p-3'}>
+                                        <button className={'bg-sky-500 p-1 rounded-md'} onClick={()=>editElement(fila.id_carac,i+1)}>Editar</button>
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
@@ -59,13 +67,11 @@ const ComponentePrueba = () => {
                 </div>
             );
         }
-
         return tablas;
-
     }
     return (
         <>
-            {data[2] &&
+            {data[5] &&
                 <div className={'flex justify-center'}>
                     <table className={'border-collapse border border-slate-500'}>
                         <thead>
@@ -85,9 +91,15 @@ const ComponentePrueba = () => {
                     </table>
                 </div>
             }
+            <div className={'flex justify-center'}>
+                <label>id_ver</label>
+                <select onChange={handleSelect}>
+                    <option disabled selected>--Seleccionar--</option>
+                    <option value={1}>1</option>
+                    <option value={2}>2</option>
+                </select>
+            </div>
             {mostrarTabla()}
-
-
         </>
     )
 }
