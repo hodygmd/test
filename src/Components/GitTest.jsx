@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from "react";
 import axios from "axios";
+import {AddData} from "../classes/AddData";
 
 const GitTest = () => {
     const [data, setData] = useState([]);
@@ -14,16 +15,21 @@ const GitTest = () => {
         setFlag(false)
     }, [flag]);
     const [imagen, setImagen] = useState(null);
+    const [nom,setNom]=useState(null)
 
     const seleccionarImagen = (e) => {
         setImagen(e.target.files[0]);
     };
+    const handleNom=(event)=>{
+        setNom(event.target.value)
+    }
 
     const enviarImagen = async (e) => {
         e.preventDefault();
         const formData = new FormData();
         formData.append("image", imagen);
-        axios.post('http://localhost:3001/api/images',formData).then(response => {
+        /*formData.append("nom", nom);*/
+        axios.post('http://localhost:3001/api/images',new AddData(formData.image,nom)).then(response => {
             console.log(response)
         }).catch(error => {
             console.log(error)
@@ -42,6 +48,7 @@ const GitTest = () => {
         <div>
             <h1>Git Test</h1>
             <form onSubmit={enviarImagen}>
+                <input type={'text'} value={nom} onChange={handleNom}/><br/>
                 <input type="file" name="image" accept="image/*" onChange={seleccionarImagen}/><br/>
                 <button type="submit" className={'bg-sky-500'}>Enviar</button><br/>
             </form>
